@@ -1,41 +1,30 @@
 package web.controller;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import web.model.Car;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-
 import web.service.CarServiceImpl;
 
+import java.util.List;
+
 @Controller
-//@RequestMapping(value = "/cars")
+@RequestMapping("/cars")
 public class CarController {
 
-    @GetMapping(value = "/cars")
-    public String getCars(ModelMap model, HttpServletRequest request) {
-       // @RequestParam("count") int count
+    private final CarServiceImpl carServiceImpl;
 
-        List<Car> cars = new ArrayList<>();
-        cars.add(new Car("Hyundai", "Solaris", 2020));
-        cars.add(new Car("BMW", "X5", 2015));
-        cars.add(new Car("Audi", "A7", 2017));
-        cars.add(new Car("Nissan", "Juke", 2019));
-        cars.add(new Car("Volkswagen", "Tuareg", 1998));
+    public CarController(CarServiceImpl carServiceImpl) {
+        this.carServiceImpl = carServiceImpl;
+    }
 
-
-
-        if (CarServiceImpl.isOKCount(request.getParameter("count"))) {
-            int count = Integer.parseInt(request.getParameter("count"));
-            cars = CarServiceImpl.cutCarsList(cars, count);
-        }
-
-
-
+    @GetMapping()
+    public String getCars(@RequestParam(defaultValue = "5") Integer count, Model model) {
+        List<Car> cars = carServiceImpl.getCarslist(count);
         model.addAttribute("cars", cars);
         return "cars";
     }
+
 }
